@@ -1,0 +1,23 @@
+export default [
+    { "_id": "A101", "title": "Propulsion Assignment", "course": "ML1" },
+    { "_id": "A102", "title": "Combustion Analysis", "course": "ML1" },
+    { "_id": "A103", "title": "Nozzle Design Project", "course": "ML1" },
+    { "_id": "A201", "title": "Aerodynamics Quiz", "course": "ELO" },
+    { "_id": "A202", "title": "Flow Analysis", "course": "ELO" },
+    { "_id": "A203", "title": "Heating Analysis", "course": "ELO" },
+    { "_id": "A301", "title": "Structural Design Task", "course": "NDS" },
+    { "_id": "A302", "title": "Orbital Calculations", "course": "NDS" },
+    { "_id": "A303", "title": "Systems Engineering Exam", "course": "NDS" },
+    { "_id": "A101", "title": "Propulsion Assignment", "course": "AI" },
+    { "_id": "A102", "title": "Combustion Analysis", "course": "AI" },
+    { "_id": "A103", "title": "Nozzle Design Project", "course": "AI" },
+    { "_id": "A201", "title": "Aerodynamics Quiz", "course": "DBR" },
+    { "_id": "A202", "title": "Flow Analysis", "course": "DBR" },
+    { "_id": "A203", "title": "Heating Analysis", "course": "DBR" },
+    { "_id": "A301", "title": "Structural Design Task", "course": "OS" },
+    { "_id": "A302", "title": "Orbital Calculations", "course": "OS" },
+    { "_id": "A303", "title": "Systems Engineering Exam", "course": "OS" },
+    { "_id": "A301", "title": "Structural Design Task", "course": "SWE" },
+    { "_id": "A302", "title": "Orbital Calculations", "course": "SWE" },
+    { "_id": "A303", "title": "Systems Engineering Exam", "course": "SWE"}
+]
