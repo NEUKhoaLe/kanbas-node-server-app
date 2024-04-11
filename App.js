@@ -8,6 +8,9 @@ const app = express()
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+    res.send('Welcome to Web Development!');
+})
 app.use('/api/courses', courseRouter);
 app.use('/a5', lab5Router);
 app.use(modulesRouter);
