@@ -1,48 +1,47 @@
 import express from "express";
-import Database from "../Database/index.js";
+import { findAllCourses, updateCourse, createCourse, deleteCourse, findCourseById } from "../Database/courses/dao.js";
 
 const courseRouter = express.Router();
 
-courseRouter.get('/', (req, res) => {
-    const courses = Database.courses;
-    res.send(courses);
+courseRouter.get('/', async (req, res) => {
+    const courses = await findAllCourses();
+    res.json(courses);
 })
 
-courseRouter.get("/:id", (req, res) => {
+courseRouter.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const course = Database.courses
-        .find((c) => c.course_id === id);
+    const course = await findCourseById(id);
     if (!course) {
         res.status(404).send("Course not found");
         return;
     }
-    res.send(course);
+    res.json(course);
 });
 
-courseRouter.post('/', (req, res) => {
+courseRouter.post('/', async (req, res) => {
+    delete req.body["_id"];
     const course = { ...req.body };
-    Database.courses.push(course);
-    res.send(course);
+
+    await createCourse(course);
+    res.json(await findCourseById(req.body.course_id));
 })
 
-courseRouter.delete('/:id', (req, res) => {
+courseRouter.delete('/:id', async (req, res) => {
     const { id } = req.params;
+    await deleteCourse(id);
 
-    Database.courses = Database.courses
-        .filter((c) => c.course_id !== id);
-
-    res.send(Database.courses);
+    const courses = await findAllCourses();
+    res.json(courses);
 })
 
-courseRouter.patch('/:id', (req, res) => {
+courseRouter.patch('/:id', async (req, res) => {
     const { id } = req.params;
-    const course = req.body;
+    const course = { ...req.body };
 
-    Database.courses = Database.courses.map((c) => {
-        return c.course_id === id ? {...c, ...course} : c
-    })
+    await updateCourse(id, course);
+    const courses = await findAllCourses();
 
-    res.send(Database.courses);
+    res.json(courses);
 })
 
 export default courseRouter;
