@@ -2,13 +2,14 @@ import express from "express";
 import Database from "../Database/index.js";
 import database from "../Database/index.js";
 import {getModules, createModule, deleteModule, patchModule} from "../Database/modules/dao.js";
+import { Types } from "mongoose";
 
 const modulesRouter = express.Router();
 
-modulesRouter.get("/api/courses/:cid/modules", (req, res) => {
+modulesRouter.get("/api/courses/:cid/modules", async (req, res) => {
     const { cid } = req.params;
-    const modules = getModules(cid);
-    res.send(modules);
+    const modules = await getModules(cid);
+    res.json(modules);
 });
 
 modulesRouter.post('/api/courses/:cid/modules', async (req, res) => {
@@ -16,26 +17,30 @@ modulesRouter.post('/api/courses/:cid/modules', async (req, res) => {
     const newModule = {
         ...req.body,
         course: cid,
-        _id: new Date().getTime().toString(),
     };
 
-    await createModule(newModule);
+   newModule['_id'] = new Types.ObjectId();
 
-    res.send(newModule);
+   await createModule(newModule);
+
+   res.send(newModule);
 })
 
-modulesRouter.delete("/api/modules/:mid", (req, res) => {
+modulesRouter.delete("/api/modules/:mid", async (req, res) => {
     const { mid } = req.params;
-    deleteModule(mid);
+    try {
+        await deleteModule(mid);
+    } catch (e) {
+        console.log(e);
+    }
     res.sendStatus(200);
 });
 
-modulesRouter.put("/api/modules/:mid", (req, res) => {
+modulesRouter.put("/api/modules/:mid", async (req, res) => {
     const { mid } = req.params;
-    patchModule(mid, {...req.body})
+    await patchModule(mid, {...req.body})
     res.sendStatus(204);
 });
-
 
 
 export default modulesRouter;

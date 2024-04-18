@@ -1,12 +1,25 @@
 import * as dao from "../Database/Users/dao.js";
+import {findUserByUsername} from "../Database/Users/dao.js";
 export default function UserRoutes(app) {
     const createUser = async (req, res) => {
-        const user = await dao.createUser(req.body);
-        res.json(user);
+        let user = await dao.findUserByUsername(req.body.username);
+        if (user) {
+            return res.status(400).json(
+                { message: "Username already taken" });
+        }
+
+        delete req.body['_id']
+        user = { ...await dao.createUser({...req.body }) };
+
+        res.json(await dao.findUserByUsername(req.body.username))
     };
     const deleteUser = async (req, res) => {
-        const status = await dao.deleteUser(req.params.userId);
-        res.json(status);
+        if (req.session['currentUser']._id !== req.params.userId) {
+            const status = await dao.deleteUser(req.params.userId);
+            res.json(status);
+        }
+
+        res.json(200);
     };
 
     const findAllUsers = async (req, res) => {
@@ -34,15 +47,29 @@ export default function UserRoutes(app) {
         }
         const currentUser = await dao.createUser(req.body);
         req.session["currentUser"] = currentUser;
-        res.json(currentUser);
+        req.session.save(err => {
+            if (err) {
+                // handle error
+                res.sendStatus(500);
+            } else {
+                res.json(currentUser);
+            }
+        });
     };
 
     const signin = async (req, res) => {
         const { username, password } = req.body;
         const currentUser = await dao.findUserByCredentials(username, password);
+
         if (currentUser) {
             req.session["currentUser"] = currentUser;
-            res.json(currentUser);
+            req.session.save(err => {
+                if (err) {
+                    res.sendStatus(500);
+                } else {
+                    res.json(currentUser);
+                }
+            });
         } else {
             res.sendStatus(401);
         }
@@ -54,6 +81,7 @@ export default function UserRoutes(app) {
 
     const profile = async (req, res) => {
         const currentUser = req.session["currentUser"];
+
         if (!currentUser) {
             res.sendStatus(401);
         } else {

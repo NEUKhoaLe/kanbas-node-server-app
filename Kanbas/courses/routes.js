@@ -3,44 +3,45 @@ import { findAllCourses, updateCourse, createCourse, deleteCourse, findCourseByI
 
 const courseRouter = express.Router();
 
-courseRouter.get('/', (req, res) => {
-    const courses = findAllCourses();
-    res.send(courses);
+courseRouter.get('/', async (req, res) => {
+    const courses = await findAllCourses();
+    res.json(courses);
 })
 
-courseRouter.get("/:id", (req, res) => {
+courseRouter.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const course = findCourseById(id);
+    const course = await findCourseById(id);
     if (!course) {
         res.status(404).send("Course not found");
         return;
     }
-    res.send(course);
+    res.json(course);
 });
 
 courseRouter.post('/', async (req, res) => {
+    delete req.body["_id"];
     const course = { ...req.body };
 
     await createCourse(course);
-    res.send(findCourseById(req.body.course_id));
+    res.json(await findCourseById(req.body.course_id));
 })
 
-courseRouter.delete('/:id', (req, res) => {
+courseRouter.delete('/:id', async (req, res) => {
     const { id } = req.params;
-    deleteCourse(id);
+    await deleteCourse(id);
 
-    const courses = findAllCourses();
-    res.send(courses);
+    const courses = await findAllCourses();
+    res.json(courses);
 })
 
-courseRouter.patch('/:id', (req, res) => {
+courseRouter.patch('/:id', async (req, res) => {
     const { id } = req.params;
     const course = { ...req.body };
 
-    updateCourse(id, course);
-    const courses = findAllCourses();
+    await updateCourse(id, course);
+    const courses = await findAllCourses();
 
-    res.send(courses);
+    res.json(courses);
 })
 
 export default courseRouter;

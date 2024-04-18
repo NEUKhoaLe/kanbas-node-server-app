@@ -5,15 +5,18 @@ import modulesRouter from "./Kanbas/modules/routes.js";
 import mongoose from "mongoose";
 import cors from 'cors';
 import UserRoutes from "./Kanbas/users/routes.js";
-import session from "express-session";
+import session from 'express-session';
 import "dotenv/config";
 
 const app = express()
-mongoose.connect(process.env.DATABASE_URL);
+
 app.use(cors({
     credentials: true,
     origin: process.env.FRONTEND_URL,
 }));
+
+app.use(express.json());
+
 const sessionOptions = {
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -29,19 +32,18 @@ if (process.env.NODE_ENV !== "development") {
     };
 }
 
-app.use(
-    session(sessionOptions)
-);
-
-app.use(express.json());
+app.use(session(sessionOptions));
+mongoose.connect(process.env.DATABASE_URL);
 
 app.get('/', (req, res) => {
     res.send('Welcome to Web Development!');
 })
+
+UserRoutes(app);
 app.use('/api/courses', courseRouter);
 app.use('/a5', lab5Router);
 app.use(modulesRouter);
-UserRoutes(app);
+app.use(modulesRouter);
 
 
 app.listen(process.env.PORT || 4000);
